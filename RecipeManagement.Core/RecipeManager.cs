@@ -243,10 +243,9 @@ public sealed class RecipeManager : IRecipeManager
             return _recipes.Values.ToList().AsReadOnly();
         }
 
-        return _recipes.Where(
-            recipe => recipe.Value.Title.ToLower()
+        return _recipes.Values.Where(
+            recipe => recipe.Title.ToLower()
             .Contains(searchText.ToLower()))
-        .Select(recipe => recipe.Value)
         .Distinct()
         .ToList();
     }
@@ -259,11 +258,10 @@ public sealed class RecipeManager : IRecipeManager
         }
 
         // TODO: Check if there is a way for .Contains to ignore letter casing
-        return _recipes.Where(
-            recipe => recipe.Value.Ingredients.Any(
+        return _recipes.Values.Where(
+            recipe => recipe.Ingredients.Any(
                 recipe => recipe.ToLower().Contains(searchText.ToLower()))
         )
-        .Select(recipe => recipe.Value)
         .Distinct()
         .ToList();
     }
