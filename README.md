@@ -1,7 +1,7 @@
 # Recipe Management System — Student Starter
 Part B:
 
-https://github.com/kadisonm/COMP2021-2026-2-assignment-a3008743
+https://github.com/kadisonm/COMP2021-2026-2-assignment-b-a3008743
 
 Starter repository for Parts A and B. Implement `RecipeManager` in Core; the Application menu and JSON loader are supplied.
 

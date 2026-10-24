@@ -24,7 +24,6 @@ public sealed class RecipeManager : IRecipeManager
             throw new ArgumentNullException();
         }
 
-        // Reject duplicate recipe IDs and handle missing recipe IDs safely
         foreach (Recipe recipe in recipes)
         {
             if (_recipes.ContainsKey(recipe.Id) ||
@@ -34,7 +33,6 @@ public sealed class RecipeManager : IRecipeManager
                 throw new ArgumentException();
             }
 
-            // Add valid recipe to the dictionary
             _recipes[recipe.Id] = recipe;
         }
     }
@@ -47,7 +45,6 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool AddRecipe(Recipe recipe)
     {
-        // Do not accept null recipes
         if (recipe == null)
         {
             throw new ArgumentNullException();
@@ -61,7 +58,6 @@ public sealed class RecipeManager : IRecipeManager
             return false;
         }
 
-        // Add the recipe and return true
         _recipes[recipe.Id] = recipe;
 
         return true;
@@ -69,7 +65,6 @@ public sealed class RecipeManager : IRecipeManager
 
     public Recipe? FindRecipe(int recipeId)
     {
-        // If no key is found return null
         if (!_recipes.ContainsKey(recipeId))
         {
             return null;
@@ -80,7 +75,6 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool RemoveRecipe(int recipeId)
     {
-        // TODO: Return false when the recipe is already in a cooking plan
         if (FindRecipe(recipeId) == null)
         {
             return false;
@@ -130,7 +124,6 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool AddRecipeToCookingPlan(int recipeId)
     {
-        // Ensure duplicate or non existent recipes cannot be added.
         if (FindRecipe(recipeId) == null ||
             _cookingPlan.Find(recipeId) != null)
         {
@@ -144,13 +137,11 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool RemoveRecipeFromCookingPlan(int recipeId)
     {
-        // Remove the recipe from the cooking plan
         if (!_cookingPlan.Remove(recipeId))
         {
             return false;
         }
 
-        // Add the removed recipe to the history
         _removedRecipe.Push(recipeId);
 
         return true;
@@ -158,7 +149,6 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool RestoreLastRemovedRecipe()
     {
-        // False if there are no removed recipes
         if (_removedRecipe.Count == 0)
         {
             return false;
@@ -166,13 +156,11 @@ public sealed class RecipeManager : IRecipeManager
 
         var recipeID = _removedRecipe.Pop();
 
-        // False if the recipe still exists and is already planned
         if (_cookingPlan.Find(recipeID) != null)
         {
             return false;
         }
 
-        // Restore it
         _cookingPlan.AddLast(recipeID);
 
         return true;
@@ -180,7 +168,6 @@ public sealed class RecipeManager : IRecipeManager
 
     public int? PeekLastRemovedRecipe()
     {
-        // Return null if there is no last removed recipe
         if (!_removedRecipe.TryPeek(out int lastRemoved))
         {
             return null;
@@ -248,11 +235,38 @@ public sealed class RecipeManager : IRecipeManager
         return _instructionQueue.Dequeue();
     }
 
-    public IReadOnlyList<Recipe> SearchByTitle(string searchText) =>
-        throw new NotImplementedException("Part B: implement SearchByTitle.");
+    // TODO: Write a docstring
+    public IReadOnlyList<Recipe> SearchByTitle(string searchText)
+    {
+        if (searchText == string.Empty)
+        {
+            return _recipes.Values.ToList().AsReadOnly();
+        }
 
-    public IReadOnlyList<Recipe> SearchByIngredient(string searchText) =>
-        throw new NotImplementedException("Part B: implement SearchByIngredient.");
+        return _recipes.Where(
+            recipe => recipe.Value.Title.ToLower()
+            .Contains(searchText.ToLower()))
+        .Select(recipe => recipe.Value)
+        .Distinct()
+        .ToList();
+    }
+
+    public IReadOnlyList<Recipe> SearchByIngredient(string searchText)
+    {
+        if (searchText == string.Empty)
+        {
+            return _recipes.Values.ToList().AsReadOnly();
+        }
+
+        // TODO: Check if there is a way for .Contains to ignore letter casing
+        return _recipes.Where(
+            recipe => recipe.Value.Ingredients.Any(
+                recipe => recipe.ToLower().Contains(searchText.ToLower()))
+        )
+        .Select(recipe => recipe.Value)
+        .Distinct()
+        .ToList();
+    }
 
     public IReadOnlyList<Recipe> GetHighestProteinRecipes(int count) =>
         throw new NotImplementedException("Part B: implement GetHighestProteinRecipes.");
