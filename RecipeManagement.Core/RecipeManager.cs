@@ -235,7 +235,6 @@ public sealed class RecipeManager : IRecipeManager
         return _instructionQueue.Dequeue();
     }
 
-    // TODO: Write a docstring
     public IReadOnlyList<Recipe> SearchByTitle(string searchText)
     {
         if (searchText == string.Empty)
@@ -258,6 +257,7 @@ public sealed class RecipeManager : IRecipeManager
         }
 
         // TODO: Check if there is a way for .Contains to ignore letter casing
+        // TODO: Maybe doesn't require partial searching but exact match
         return _recipes.Values.Where(
             recipe => recipe.Ingredients.Any(
                 recipe => recipe.ToLower().Contains(searchText.ToLower()))
@@ -266,8 +266,16 @@ public sealed class RecipeManager : IRecipeManager
         .ToList();
     }
 
-    public IReadOnlyList<Recipe> GetHighestProteinRecipes(int count) =>
-        throw new NotImplementedException("Part B: implement GetHighestProteinRecipes.");
+    public IReadOnlyList<Recipe> GetHighestProteinRecipes(int count)
+    {
+        return _recipes.Values
+        .Where(recipe => recipe.Nutrition != null)
+        .OrderByDescending(
+            recipe => recipe.Nutrition!.ProteinG)
+        .Distinct()
+        .Take(count)
+        .ToList();
+    }
 
     public bool AddSavedRecipe(int recipeId) =>
         throw new NotImplementedException("Part B: implement AddSavedRecipe.");
