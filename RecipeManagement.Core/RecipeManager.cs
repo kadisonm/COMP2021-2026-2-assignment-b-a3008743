@@ -244,8 +244,8 @@ public sealed class RecipeManager : IRecipeManager
         }
 
         return _recipes.Values.Where(
-            recipe => recipe.Title.ToLower()
-            .Contains(searchText.ToLower()))
+            recipe => recipe.Title
+            .Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
         .Distinct()
         .ToList();
     }
@@ -257,12 +257,9 @@ public sealed class RecipeManager : IRecipeManager
             return _recipes.Values.ToList().AsReadOnly();
         }
 
-        // TODO: Check if there is a way for .Contains to ignore letter casing
-        // TODO: Maybe doesn't require partial searching but exact match
         return _recipes.Values.Where(
             recipe => recipe.Ingredients.Any(
-                recipe => recipe.ToLower().Contains(searchText.ToLower()))
-        )
+                recipe => recipe.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)))
         .Distinct()
         .ToList();
     }
