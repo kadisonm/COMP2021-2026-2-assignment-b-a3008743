@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using RecipeManagement.Core;
 
 namespace RecipeManagement.Tests;
@@ -68,8 +67,8 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
 
-        Assert.Null(manager.FindRecipe(-5)); // Should not exist
-        Assert.Equal("Recipe A", manager.FindRecipe(10)?.Title); // Should find
+        Assert.Null(manager.FindRecipe(-5));
+        Assert.Equal("Recipe A", manager.FindRecipe(10)?.Title);
     }
 
     [Fact]
@@ -77,9 +76,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
 
-        Assert.False(manager.RemoveRecipe(-5)); // Should not exist
-        Assert.True(manager.RemoveRecipe(10)); // Should exist
-        Assert.Null(manager.FindRecipe(10)); // Should be removed
+        Assert.False(manager.RemoveRecipe(-5));
+        Assert.True(manager.RemoveRecipe(10));
+        Assert.Null(manager.FindRecipe(10));
     }
 
     // Shopping list
@@ -103,17 +102,15 @@ public sealed class RecipeManagerTests
         var recipeA = manager.FindRecipe(30)?.Ingredients.Count;
         var recipeB = manager.FindRecipe(40)?.Ingredients.Count;
 
-        // Add recipeA test
         Assert.Equal(
             recipeA,
             manager.AddIngredientsToShoppingList(30)); // Returns amount added
         Assert.Equal(recipeA, manager.ShoppingItemCount); // Count increased
 
-        // Adding recipeB test
         Assert.Equal(
             recipeB,
-            manager.AddIngredientsToShoppingList(40)); // Returns amount added
-        Assert.Equal(recipeA + recipeB, manager.ShoppingItemCount); // Count increased independently
+            manager.AddIngredientsToShoppingList(40));
+        Assert.Equal(recipeA + recipeB, manager.ShoppingItemCount);
     }
 
     [Fact]
@@ -128,15 +125,12 @@ public sealed class RecipeManagerTests
     public void GetShoppingList_AreInCorrectOrder()
     {
         var manager = CreateManager();
-
-        // Add ingredients to list
         manager.AddIngredientsToShoppingList(30);
 
         var correct = new List<string> {"1 potato", "2 bacon", "3 cheese"};
 
-        // Get shopping list
         var result = manager.GetShoppingList();
-        Assert.True(result.SequenceEqual(correct)); // Copies in order
+        Assert.True(result.SequenceEqual(correct));
     }
 
     [Fact]
@@ -144,7 +138,6 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
 
-        // Add recipes to shopping list
         manager.AddIngredientsToShoppingList(30);
         manager.AddIngredientsToShoppingList(40);
 
@@ -156,9 +149,9 @@ public sealed class RecipeManagerTests
         // Clear the shopping list
         manager.ClearShoppingList();
 
-        Assert.NotEqual(totalIngredients, manager.ShoppingItemCount); // Should not match total ingredients
-        Assert.Equal(0, manager.ShoppingItemCount); // Should clear to 0
-        Assert.Equal([], manager.GetShoppingList()); // Should return an empty list
+        Assert.NotEqual(totalIngredients, manager.ShoppingItemCount);
+        Assert.Equal(0, manager.ShoppingItemCount);
+        Assert.Equal([], manager.GetShoppingList());
     }
 
     // Cooking Plan
@@ -228,10 +221,8 @@ public sealed class RecipeManagerTests
 
         Assert.True(manager.StartCooking(10));
 
-        // First in
+        // First in - out
         Assert.Equal("First step", manager.PeekNextInstruction());
-
-        // First out
         Assert.Equal("First step", manager.CompleteNextInstruction());
 
         // Continues correctly
@@ -253,6 +244,33 @@ public sealed class RecipeManagerTests
 
         Assert.Null(manager.CompleteNextInstruction());
     }
+
+    // TODO: Part B marker tests concentrate on the two searches, 
+    // one protein report and the saved-recipe methods.
+
+    // LINQ Searches
+    [Fact]
+    public void SearchByTitle_FindsPartialRecipes()
+    {
+        var manager = CreateManager();
+
+        Assert.Contains(
+            [10, 20], 
+            manager.SearchByTitle("Recipe")
+            .Select(a => a.Id).ToArray());
+
+        Assert.Equal(
+            [10], 
+            manager.SearchByTitle("A")
+            .Select(a => a.Id));
+
+        Assert.Equal(
+            [10], 
+            manager.SearchByTitle("Recipe A")
+            .Select(a => a.Id));
+    }
+
+    // Saved Recipes
 
     // Utility
     private static RecipeManager CreateManager()
