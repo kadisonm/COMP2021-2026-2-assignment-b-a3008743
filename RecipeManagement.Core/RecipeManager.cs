@@ -16,6 +16,7 @@ public sealed class RecipeManager : IRecipeManager
     private readonly LinkedList<int> _cookingPlan = [];
     private readonly Stack<int> _removedRecipe = [];
     private readonly Queue<string> _instructionQueue = [];
+    private readonly Dictionary<int, Recipe> _savedRecipes = [];
 
     public RecipeManager(IEnumerable<Recipe> recipes)
     {
@@ -277,15 +278,44 @@ public sealed class RecipeManager : IRecipeManager
         .ToList();
     }
 
-    public bool AddSavedRecipe(int recipeId) =>
-        throw new NotImplementedException("Part B: implement AddSavedRecipe.");
+    public bool AddSavedRecipe(int recipeId)
+    {
+        var recipe = FindRecipe(recipeId);
 
-    public bool RemoveSavedRecipe(int recipeId) =>
-        throw new NotImplementedException("Part B: implement RemoveSavedRecipe.");
+        if (recipe == null || IsRecipeSaved(recipeId))
+        {
+            return false;
+        }
 
-    public bool IsRecipeSaved(int recipeId) =>
-        throw new NotImplementedException("Part B: implement IsRecipeSaved.");
+        _savedRecipes.Add(recipeId, recipe);
 
-    public IReadOnlyList<int> GetSavedRecipes() =>
-        throw new NotImplementedException("Part B: implement GetSavedRecipes.");
+        return true;
+    }
+
+    public bool RemoveSavedRecipe(int recipeId)
+    {
+        if (IsRecipeSaved(recipeId) == false)
+        {
+            return false;
+        }
+
+        _savedRecipes.Remove(recipeId);
+
+        return true;
+    }
+
+    public bool IsRecipeSaved(int recipeId)
+    {
+        if (!_recipes.ContainsKey(recipeId))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public IReadOnlyList<int> GetSavedRecipes()
+    {
+        return _savedRecipes.Keys.ToList().AsReadOnly();
+    }
 }
