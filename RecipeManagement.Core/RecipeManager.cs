@@ -269,8 +269,16 @@ public sealed class RecipeManager : IRecipeManager
 
     public IReadOnlyList<Recipe> GetHighestProteinRecipes(int count)
     {
+        if (count <= 0)
+        {
+            return [];
+        }
+
         return _recipes.Values
-        .Where(recipe => recipe.Nutrition != null)
+        .Where(
+            recipe => recipe.Nutrition != null && 
+            recipe.Nutrition.ProteinG != null &&
+            recipe.Nutrition.ProteinG != 0)
         .OrderByDescending(
             recipe => recipe.Nutrition!.ProteinG)
         .Distinct()
