@@ -13,7 +13,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
 
-        Assert.Equal(4, manager.RecipeCount);
+        Assert.Equal(8, manager.RecipeCount);
         Assert.Equal("Recipe A", manager.FindRecipe(10)?.Title);
     }
 
@@ -90,7 +90,7 @@ public sealed class RecipeManagerTests
         manager.AddIngredientsToShoppingList(40);
 
         Assert.Equal(
-            ["1 potato", "2 bacon", "3 cheese", "1 tomato", "1 carrot"], 
+            ["1 potato", "2 bacon", "3 apple", "1 tomato", "1 carrot"],
             manager.GetShoppingList());
     }
 
@@ -127,7 +127,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         manager.AddIngredientsToShoppingList(30);
 
-        var correct = new List<string> {"1 potato", "2 bacon", "3 cheese"};
+        var correct = new List<string> { "1 potato", "2 bacon", "3 apple" };
 
         var result = manager.GetShoppingList();
         Assert.True(result.SequenceEqual(correct));
@@ -255,22 +255,75 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
 
         Assert.Contains(
-            [10, 20], 
-            manager.SearchByTitle("Recipe")
+            [10, 20],
+            manager.SearchByTitle("recipe")
             .Select(a => a.Id).ToArray());
 
         Assert.Equal(
-            [10], 
-            manager.SearchByTitle("A")
+            [10],
+            manager.SearchByTitle("a")
             .Select(a => a.Id));
 
         Assert.Equal(
-            [10], 
-            manager.SearchByTitle("Recipe A")
+            [10],
+            manager.SearchByTitle("recipe A")
             .Select(a => a.Id));
     }
 
-    // Saved Recipes
+    [Fact]
+    public void SearchByIngredient_CorrectIngredient()
+    {
+        var manager = CreateManager();
+
+        Assert.Contains(
+            [40],
+            manager.SearchByIngredient("carrot")
+            .Select(a => a.Id).ToArray());
+
+        Assert.Contains(
+            [10, 30],
+            manager.SearchByIngredient("apple")
+            .Select(a => a.Id).ToArray());
+    }
+
+    [Fact]
+    public void GetHighestProteinRecipes_FindsHighest()
+    {
+        var manager = CreateManager();
+
+        Assert.Equal(53, 
+            manager.GetHighestProteinRecipes(1)
+            .Select(a => a.Id)
+            .First());
+
+        Assert.Equal(70, 
+            manager.GetHighestProteinRecipes(1)
+            .Select(a => a.Nutrition!.ProteinG)
+            .First());
+
+        // Still highest despite larger count
+        Assert.Equal(53, 
+            manager.GetHighestProteinRecipes(5)
+            .Select(a => a.Id)
+            .First());
+    }
+
+    [Fact]
+    public void GetHighestProteinRecipes_OrdersCorrect()
+    {
+        var manager = CreateManager();
+
+        int[] corectOrder = [53, 51, 52];
+
+        Assert.Equal(corectOrder, 
+            manager.GetHighestProteinRecipes(3)
+            .Select(a => a.Id));
+
+        // 54 has protein of 0 (should be excluded)
+        Assert.DoesNotContain(54, 
+            manager.GetHighestProteinRecipes(4)
+            .Select(a => a.Id));
+    }
 
     // Utility
     private static RecipeManager CreateManager()
@@ -292,12 +345,48 @@ public sealed class RecipeManagerTests
             new Recipe {
                 Id = 30,
                 Title = "Recipe C",
-                Ingredients = ["1 potato", "2 bacon", "3 cheese"],
+                Ingredients = ["1 potato", "2 bacon", "3 apple"],
             },
             new Recipe {
                 Id = 40,
                 Title = "Recipe D",
                 Ingredients = ["1 tomato", "1 carrot"],
+            },
+            new Recipe
+            {
+                Id = 51,
+                Title = "Recipe E",
+                Nutrition = new()
+                {
+                    ProteinG = 65
+                }
+            },
+            new Recipe
+            {
+                Id = 52,
+                Title = "Recipe F",
+                Nutrition = new()
+                {
+                    ProteinG = 30
+                }
+            },
+            new Recipe
+            {
+                Id = 53,
+                Title = "Recipe G",
+                Nutrition = new()
+                {
+                    ProteinG = 70
+                }
+            },
+            new Recipe
+            {
+                Id = 54,
+                Title = "Recipe H",
+                Nutrition = new()
+                {
+                    ProteinG = 0
+                }
             }
         ]);
     }
