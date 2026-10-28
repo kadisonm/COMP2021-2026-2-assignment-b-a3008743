@@ -325,6 +325,54 @@ public sealed class RecipeManagerTests
             .Select(a => a.Id));
     }
 
+    // Saved Recipes
+    [Fact]
+    public void AddSavedRecipe_AddsRecipe()
+    {
+        var manager = CreateManager();
+        manager.AddSavedRecipe(10);
+
+        Assert.Contains(10, manager.GetSavedRecipes());
+        Assert.True(manager.IsRecipeSaved(10));
+        Assert.False(manager.AddSavedRecipe(10));
+    }
+
+    [Fact]
+    public void IsRecipeSaved_FindsRecipe()
+    {
+        var manager = CreateManager();
+        manager.AddSavedRecipe(10);
+
+        Assert.True(manager.IsRecipeSaved(10));
+        Assert.False(manager.IsRecipeSaved(5));
+    }
+
+    [Fact]
+    public void RemoveSavedRecipe_RemovesExistingRecipes()
+    {
+        var manager = CreateManager();
+        manager.AddSavedRecipe(10);
+
+        Assert.False(manager.RemoveSavedRecipe(-5));
+        Assert.True(manager.RemoveSavedRecipe(10));
+        Assert.False(manager.IsRecipeSaved(10));
+    }
+
+    [Fact]
+    public void GetSavedRecipes_AddedRecipesAreIncluded()
+    {
+        var manager = CreateManager();
+
+        manager.AddSavedRecipe(10);
+        Assert.Equal([10], manager.GetSavedRecipes());
+
+        manager.AddSavedRecipe(20);
+        Assert.Equal([10, 20], manager.GetSavedRecipes());
+        
+        manager.AddSavedRecipe(30);
+        Assert.Equal([10, 20, 30], manager.GetSavedRecipes());
+    }
+
     // Utility
     private static RecipeManager CreateManager()
     {
