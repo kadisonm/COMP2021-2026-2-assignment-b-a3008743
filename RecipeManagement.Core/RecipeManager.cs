@@ -22,7 +22,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (recipes == null)
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("Cannot instantiate RecipeManager as the provided recipes array is null.");
         }
 
         foreach (Recipe recipe in recipes)
@@ -31,7 +31,7 @@ public sealed class RecipeManager : IRecipeManager
                 recipe.Title == string.Empty ||
                 recipe.Id < 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException($"Cannot add recipe of Id ({recipe.Id}) as it is either a duplicate, has an empty title or an Id < 0.");
             }
 
             _recipes[recipe.Id] = recipe;
@@ -48,7 +48,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (recipe == null)
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException($"Cannot add a recipe of null value.");
         }
 
         // Return false is a recipe already exists, has a blank title or negative Id
@@ -76,7 +76,7 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool RemoveRecipe(int recipeId)
     {
-        if (FindRecipe(recipeId) == null)
+        if (FindRecipe(recipeId) == null || _cookingPlan.Contains(recipeId))
         {
             return false;
         }
@@ -157,7 +157,7 @@ public sealed class RecipeManager : IRecipeManager
 
         var recipeID = _removedRecipe.Pop();
 
-        if (_cookingPlan.Find(recipeID) != null)
+        if (_cookingPlan.Find(recipeID) != null || FindRecipe(recipeID) == null)
         {
             return false;
         }
