@@ -3,6 +3,8 @@ Part B:
 
 https://github.com/kadisonm/COMP2021-2026-2-assignment-b-a3008743
 
+Submitted: 28/10/2026
+
 Starter repository for Parts A and B. Implement `RecipeManager` in Core; the Application menu and JSON loader are supplied.
 
 ## What is supplied

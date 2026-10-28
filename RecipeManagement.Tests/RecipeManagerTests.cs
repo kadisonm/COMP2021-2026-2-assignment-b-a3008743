@@ -245,9 +245,6 @@ public sealed class RecipeManagerTests
         Assert.Null(manager.CompleteNextInstruction());
     }
 
-    // TODO: Part B marker tests concentrate on the two searches, 
-    // one protein report and the saved-recipe methods.
-
     // LINQ Searches
     [Fact]
     public void SearchByTitle_FindsPartialRecipes()
