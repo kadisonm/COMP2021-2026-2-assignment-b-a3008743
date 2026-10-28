@@ -311,7 +311,7 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool IsRecipeSaved(int recipeId)
     {
-        if (!_recipes.ContainsKey(recipeId))
+        if (!_savedRecipes.ContainsKey(recipeId))
         {
             return false;
         }
